@@ -8,7 +8,7 @@
     <div
       v-show="scrollBarHeight < wrapHeight"
       ref="barRef"
-      :style="`transform: translateY(${scrollY}px); height: ${barHeight}`"
+      :style="`transform: translateY(${barMove}px); height: ${barHeight}px`"
       absolute
       right-0
       top-0
@@ -39,11 +39,15 @@ const { height: wrapHeight } = useElementSize(wrapRef);
 const { y: barY } = useDraggable(barRef, {
   axis: 'y',
   onMove: () => {
-    scrollY.value = barY.value - y.value;
+    scrollY.value =
+      ((barY.value - y.value) / scrollBarHeight.value) * wrapHeight.value;
   },
 });
 const barHeight = computed(() => {
-  return 2 * scrollBarHeight.value - wrapHeight.value + 'px';
+  return Math.pow(scrollBarHeight.value, 2) / wrapHeight.value;
+});
+const barMove = computed(() => {
+  return (scrollY.value / wrapHeight.value) * scrollBarHeight.value;
 });
 </script>
 <style scoped></style>
